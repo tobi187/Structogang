@@ -19,7 +19,7 @@ const children = ref<Component[]>([])
 
 <template>
   <main>
-    <div class="container">
+    <div class="w-100 p-28 border">
       <div class="flex gap-3 justify-center p-5">
         <div
           draggable="true"
@@ -44,13 +44,16 @@ const children = ref<Component[]>([])
         </div>
       </div>
       <div
-        class="w-100 border p-8"
+        class="w-100 border border-black p-8"
         :class="{ 'bg-cyan-500': onHover }"
         @dragenter="onHover = true"
         @dragleave="onHover = false"
         @drop="dropper"
         @dragover.prevent
       >
+        <i class="text-opacity-60">Drag here to add...</i>
+      </div>
+      <div>
         <div class="border border-black w-100">
           <component
             v-for="(name, index) in children"
