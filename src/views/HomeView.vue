@@ -6,6 +6,11 @@ import { type Component, ref } from 'vue'
 
 const onHover = ref(false)
 
+const doDelete = (index: number, child: Component[] | null) => {
+  children.value.splice(index, 1)
+  if (child != null) children.value.push(...child)
+}
+
 const dropper = (evt: DragEvent) => {
   const component = evt.dataTransfer?.getData('name')
   if (component === 'if_block') children.value.push(IfBlock)
@@ -23,21 +28,21 @@ const children = ref<Component[]>([])
       <div class="flex gap-3 justify-center p-5">
         <div
           draggable="true"
-          class="m-2 p-2 border-black border"
+          class="m-2 p-2 border-black border bg-neutral-400"
           @dragstart="(evt: DragEvent) => evt.dataTransfer?.setData('name', 'if_block')"
         >
           if
         </div>
         <div
           draggable="true"
-          class="m-2 p-2 border-black border"
+          class="m-2 p-2 border-black border bg-fuchsia-400"
           @dragstart="(evt: DragEvent) => evt.dataTransfer?.setData('name', 'loop')"
         >
           loop
         </div>
         <div
           draggable="true"
-          class="m-2 p-2 border-black border"
+          class="m-2 p-2 border-black border bg-orange-400"
           @dragstart="(evt: DragEvent) => evt.dataTransfer?.setData('name', 'process')"
         >
           statement
@@ -59,6 +64,8 @@ const children = ref<Component[]>([])
             v-for="(name, index) in children"
             :key="index"
             :is="name"
+            :index="index"
+            @delete="(index: number, child: Component[] | null) => doDelete(index, child)"
           ></component>
         </div>
       </div>
