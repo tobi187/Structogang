@@ -11,17 +11,15 @@ const props = defineProps<{
 const bg_class = 'bg-lime-400'
 
 const emit = defineEmits<{
-  (e: 'delete', id: number, child: Component[]): void
+  (e: 'delete', id: number): void
 }>()
 
-const doDelete = (index: number, child: Component[] | null) => {
+const doDelete = (index: number) => {
   children.value.splice(index, 1)
-
-  if (child != null) children.value.push(...child)
 }
 
 const onHover = ref(false)
-const text = ref('for (var i = int.Max; i > int.Min; i--)')
+const text = ref('')
 
 const dropper = (evt: DragEvent) => {
   const component = evt.dataTransfer?.getData('name')
@@ -51,12 +49,16 @@ const children = ref<Component[]>([])
         placeholder="for (var i = int.Max; i > int.Min; i--)"
         v-model="text"
       />
-      <button
-        @click="emit('delete', props.index, children)"
-        class="bg-red-600 p-1"
-      >
-        Del
-      </button>
+      <div class="flex align-middle">
+        <div class="items-center flex">
+          <font-awesome-icon
+            size="lg"
+            icon="fa-solid-xl fa-trash"
+            class="rounded-full p-2 bg-red-600 hover:scale-125 hover:cursor-pointer"
+            @click="emit('delete', props.index)"
+          />
+        </div>
+      </div>
     </div>
     <div class="flex">
       <div class="basis-1/5" :class="bg_class"></div>
@@ -66,7 +68,7 @@ const children = ref<Component[]>([])
           :key="index"
           :is="name"
           :index="index"
-          @delete="(id: number, child: Component[]) => doDelete(id, child)"
+          @delete="(id: number) => doDelete(id)"
           class="border border-black"
         ></component>
       </div>

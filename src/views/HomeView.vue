@@ -6,9 +6,8 @@ import { type Component, ref } from 'vue'
 
 const onHover = ref(false)
 
-const doDelete = (index: number, child: Component[] | null) => {
+const doDelete = (index: number) => {
   children.value.splice(index, 1)
-  if (child != null) children.value.push(...child)
 }
 
 const dropper = (evt: DragEvent) => {
@@ -65,7 +64,7 @@ const children = ref<Component[]>([])
             :key="index"
             :is="name"
             :index="index"
-            @delete="(index: number, child: Component[] | null) => doDelete(index, child)"
+            @delete="(index: number, child: Component[] | null) => doDelete(index)"
           ></component>
         </div>
       </div>
