@@ -2,16 +2,16 @@
 import ProcessBlock from '@/components/ProcessBlock.vue'
 import IfBlock from '@/components/IfBlock.vue'
 import LoopBlock from '@/components/LoopBlock.vue'
-import type { BlockBase } from '@/models/blocks'
 import { type Component, ref } from 'vue'
+import { structureStore } from '@/models/store'
 
 const onHover = ref(false)
 
-const state = ref<BlockBase[]>([])
-
-const rootStructure = ref<HTMLDivElement>()
+const store = structureStore
+const path = ['/']
 
 const doDelete = (index: number) => {
+  store.setters.removeObj([...path, index.toString()])
   children.value.splice(index, 1)
 }
 
@@ -23,12 +23,21 @@ const dropper = (evt: DragEvent) => {
   onHover.value = false
 }
 
+const show = () => {
+  console.log(store.getters.dump())
+}
+
 const children = ref<Component[]>([])
 </script>
 
 <template>
   <main>
     <div class="w-100 p-28 border">
+      <div class="flex justify-end px-12">
+        <button class="p-1 border bg-pink-600 rounded-lg" @click="show">
+          Generate
+        </button>
+      </div>
       <div class="flex gap-3 justify-center p-5">
         <div
           draggable="true"
@@ -69,8 +78,8 @@ const children = ref<Component[]>([])
             :key="index"
             :is="name"
             :index="index"
-            :state="state"
-            @delete="(index: number, child: Component[] | null) => doDelete(index)"
+            :path="path"
+            @delete="(index: number) => doDelete(index)"
           ></component>
         </div>
       </div>

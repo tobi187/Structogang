@@ -1,22 +1,32 @@
 <script setup lang="ts">
 import { ref, onMounted, type Component } from 'vue'
-import type { BlockBase, Loop } from '@/models/blocks'
+import type { Loop } from '@/models/blocks'
 import IfBlock from '@/components/IfBlock.vue'
 import ProcessBlock from '@/components/ProcessBlock.vue'
 import LoopBlock from '@/components/LoopBlock.vue'
+import { structureStore } from '@/models/store'
 
 const props = defineProps<{
   index: number
-  state: BlockBase[]
+  path: string[]
 }>()
 
 const bg_class = 'bg-lime-400'
+const pathInternal = [...props.path, props.index.toString(), 'kids']
+
+const store = structureStore
+
+onMounted(() => {
+  const me: Loop = { text: text.value, kids: [], component: 'loop' }
+  store.setters.setObject([...props.path, props.index.toString()], me)
+})
 
 const emit = defineEmits<{
   (e: 'delete', id: number): void
 }>()
 
 const doDelete = (index: number) => {
+  store.setters.removeObj([...pathInternal, index.toString()])
   children.value.splice(index, 1)
 }
 
@@ -29,6 +39,11 @@ const dropper = (evt: DragEvent) => {
   if (component === 'process') children.value.push(ProcessBlock)
   if (component === 'loop') children.value.push(LoopBlock)
   onHover.value = false
+}
+
+const changeTitle = () => {
+  const path = [...props.path, props.index.toString(), 'text']
+  store.setters.setTitle(path, text.value)
 }
 
 const children = ref<Component[]>([])
@@ -50,6 +65,7 @@ const children = ref<Component[]>([])
         :class="bg_class"
         placeholder="for (var i = int.Max; i > int.Min; i--)"
         v-model="text"
+        @change="changeTitle"
       />
       <div class="flex align-middle">
         <div class="items-center flex">
@@ -70,7 +86,7 @@ const children = ref<Component[]>([])
           :key="index"
           :is="name"
           :index="index"
-          :state="props.state"
+          :path="pathInternal"
           @delete="(id: number) => doDelete(id)"
           class="border border-black"
         ></component>

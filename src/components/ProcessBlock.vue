@@ -1,13 +1,28 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
+import type { ProcessModel } from '@/models/blocks'
+import { structureStore } from '@/models/store'
 
 const props = defineProps<{
   index: number
+  path: string[]
 }>()
 
 const emit = defineEmits<{
   (e: 'delete', id: number): void
 }>()
+
+const store = structureStore
+
+onMounted(() => {
+  const me: ProcessModel = { text: text.value, component: 'process' }
+  store.setters.setObject([...props.path, props.index.toString()], me)
+})
+
+const changeTitle = () => {
+  const path = [...props.path, props.index.toString(), 'text']
+  store.setters.setTitle(path, text.value)
+}
 
 const text = ref('')
 </script>
@@ -18,6 +33,7 @@ const text = ref('')
       class="text-center p-2 basis-full bg-neutral-400 placeholder-black"
       v-model="text"
       placeholder="var tobi_gewinnt_aoc = !BitConverter.ToBoolean(new byte[] { (byte)(new Random().Next(4)) }, 0);"
+      @change="changeTitle"
     />
     <div class="flex bg-neutral-400 align-middle h-100">
       <div class="items-center flex">

@@ -2,6 +2,7 @@ export type { IfModel, ProcessModel, BlockBase, Loop }
 
 type BlockBase = {
   text: string
+  component: string
 }
 
 interface ProcessModel extends BlockBase {

@@ -1,26 +1,42 @@
 <script setup lang="ts">
 import ProcessBlock from '@/components/ProcessBlock.vue'
-import type { BlockBase } from '@/models/blocks'
 import IfBlock from '@/components/IfBlock.vue'
 import LoopBlock from '@/components/LoopBlock.vue'
 import type { IfModel } from '@/models/blocks'
-import { ref, type Component } from 'vue'
+import { ref, onMounted, type Component } from 'vue'
+import { structureStore } from '@/models/store'
 
 const props = defineProps<{
   index: number
-  state: BlockBase
+  path: string[]
 }>()
 
 const emit = defineEmits<{
   (e: 'delete', id: number): void
-  (e: 'buildTree', model: IfModel): void
 }>()
 
+const store = structureStore
+
+const trueInternal = [...props.path, props.index.toString(), 'trueKids']
+const falseInternal = [...props.path, props.index.toString(), 'falseKids']
+
+onMounted(() => {
+  const me: IfModel = {
+    text: text.value,
+    trueKids: [],
+    falseKids: [],
+    component: 'if_block',
+  }
+  store.setters.setObject([...props.path, props.index.toString()], me)
+})
+
 const doTrueDelete = (index: number) => {
+  store.setters.removeObj([...trueInternal, index.toString()])
   childrenTrue.value.splice(index, 1)
 }
 
 const doFalseDelete = (index: number) => {
+  store.setters.removeObj([...falseInternal, index.toString()])
   childrenFalse.value.splice(index, 1)
 }
 
@@ -45,6 +61,11 @@ const onTrueDrop = (evt: DragEvent) => {
   hoverTrue.value = false
 }
 
+const changeTitle = () => {
+  const path = [...props.path, props.index.toString(), 'title']
+  store.setters.setTitle(path, text.value)
+}
+
 const childrenTrue = ref<Component[]>([])
 const childrenFalse = ref<Component[]>([])
 </script>
@@ -56,6 +77,7 @@ const childrenFalse = ref<Component[]>([])
         class="w-full h-full p-3 text-center text-wrap bg-orange-300"
         v-model="text"
         placeholder="if (groesser < kleiner)"
+        @change="changeTitle"
       />
       <div class="flex align-middle">
         <div class="items-center flex">
@@ -85,7 +107,7 @@ const childrenFalse = ref<Component[]>([])
           :key="index"
           :index="index"
           :is="name"
-          :state="props.state"
+          :path="trueInternal"
           @delete="(index: number) => doTrueDelete(index)"
         >
         </component>
@@ -106,7 +128,7 @@ const childrenFalse = ref<Component[]>([])
           :key="index"
           :is="name"
           :index="index"
-          :state="props.state"
+          :path="falseInternal"
           @delete="(index: number) => doFalseDelete(index)"
         >
         </component>
