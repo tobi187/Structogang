@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import ProcessBlock from '@/components/ProcessBlock.vue'
+import type { BlockBase } from '@/models/blocks'
 import IfBlock from '@/components/IfBlock.vue'
 import LoopBlock from '@/components/LoopBlock.vue'
 import type { IfModel } from '@/models/blocks'
@@ -7,6 +8,7 @@ import { ref, type Component } from 'vue'
 
 const props = defineProps<{
   index: number
+  state: BlockBase
 }>()
 
 const emit = defineEmits<{
@@ -83,7 +85,8 @@ const childrenFalse = ref<Component[]>([])
           :key="index"
           :index="index"
           :is="name"
-          @delete="(index: number, child: Component[]) => doTrueDelete(index)"
+          :state="props.state"
+          @delete="(index: number) => doTrueDelete(index)"
         >
         </component>
       </div>
@@ -103,7 +106,8 @@ const childrenFalse = ref<Component[]>([])
           :key="index"
           :is="name"
           :index="index"
-          @delete="(index: number, child: Component[]) => doFalseDelete(index)"
+          :state="props.state"
+          @delete="(index: number) => doFalseDelete(index)"
         >
         </component>
       </div>

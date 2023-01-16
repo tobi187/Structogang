@@ -2,9 +2,14 @@
 import ProcessBlock from '@/components/ProcessBlock.vue'
 import IfBlock from '@/components/IfBlock.vue'
 import LoopBlock from '@/components/LoopBlock.vue'
+import type { BlockBase } from '@/models/blocks'
 import { type Component, ref } from 'vue'
 
 const onHover = ref(false)
+
+const state = ref<BlockBase[]>([])
+
+const rootStructure = ref<HTMLDivElement>()
 
 const doDelete = (index: number) => {
   children.value.splice(index, 1)
@@ -58,12 +63,13 @@ const children = ref<Component[]>([])
         <i class="text-opacity-60">Drag here to add...</i>
       </div>
       <div>
-        <div class="border border-black w-100">
+        <div class="border border-black w-100" ref="rootStructure">
           <component
             v-for="(name, index) in children"
             :key="index"
             :is="name"
             :index="index"
+            :state="state"
             @delete="(index: number, child: Component[] | null) => doDelete(index)"
           ></component>
         </div>

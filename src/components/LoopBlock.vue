@@ -1,11 +1,13 @@
 <script setup lang="ts">
-import { ref, type Component } from 'vue'
+import { ref, onMounted, type Component } from 'vue'
+import type { BlockBase, Loop } from '@/models/blocks'
 import IfBlock from '@/components/IfBlock.vue'
 import ProcessBlock from '@/components/ProcessBlock.vue'
 import LoopBlock from '@/components/LoopBlock.vue'
 
 const props = defineProps<{
   index: number
+  state: BlockBase[]
 }>()
 
 const bg_class = 'bg-lime-400'
@@ -68,6 +70,7 @@ const children = ref<Component[]>([])
           :key="index"
           :is="name"
           :index="index"
+          :state="props.state"
           @delete="(id: number) => doDelete(id)"
           class="border border-black"
         ></component>
