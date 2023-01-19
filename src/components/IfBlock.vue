@@ -9,6 +9,7 @@ import { structureStore } from '@/models/store'
 const props = defineProps<{
   index: number
   path: string[]
+  isReadonly: boolean | null
 }>()
 
 const emit = defineEmits<{
@@ -21,13 +22,31 @@ const trueInternal = [...props.path, props.index.toString(), 'trueKids']
 const falseInternal = [...props.path, props.index.toString(), 'falseKids']
 
 onMounted(() => {
-  const me: IfModel = {
-    text: text.value,
-    trueKids: [],
-    falseKids: [],
-    component: 'if_block',
+  if (props.isReadonly ?? false) {
+    const model = store.getters.get([
+      ...props.path,
+      props.index.toString(),
+    ]) as IfModel
+    text.value = model.text
+    model.trueKids.forEach((el) => {
+      if (el.component === 'if_block') childrenTrue.value.push(IfBlock)
+      if (el.component === 'process') childrenTrue.value.push(ProcessBlock)
+      if (el.component === 'loop') childrenTrue.value.push(LoopBlock)
+    })
+    model.falseKids.forEach((el) => {
+      if (el.component === 'if_block') childrenFalse.value.push(IfBlock)
+      if (el.component === 'process') childrenFalse.value.push(ProcessBlock)
+      if (el.component === 'loop') childrenFalse.value.push(LoopBlock)
+    })
+  } else {
+    const me: IfModel = {
+      text: text.value,
+      trueKids: [],
+      falseKids: [],
+      component: 'if_block',
+    }
+    store.setters.setObject([...props.path, props.index.toString()], me)
   }
-  store.setters.setObject([...props.path, props.index.toString()], me)
 })
 
 const doTrueDelete = (index: number) => {

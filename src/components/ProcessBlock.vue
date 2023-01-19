@@ -6,6 +6,7 @@ import { structureStore } from '@/models/store'
 const props = defineProps<{
   index: number
   path: string[]
+  isReadonly: true
 }>()
 
 const emit = defineEmits<{
@@ -15,8 +16,16 @@ const emit = defineEmits<{
 const store = structureStore
 
 onMounted(() => {
-  const me: ProcessModel = { text: text.value, component: 'process' }
-  store.setters.setObject([...props.path, props.index.toString()], me)
+  if (props.isReadonly ?? false) {
+    const model = store.getters.get([
+      ...props.path,
+      props.index.toString(),
+    ]) as ProcessModel
+    text.value = model.text
+  } else {
+    const me: ProcessModel = { text: text.value, component: 'process' }
+    store.setters.setObject([...props.path, props.index.toString()], me)
+  }
 })
 
 const changeTitle = () => {

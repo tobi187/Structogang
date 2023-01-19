@@ -9,6 +9,7 @@ import { structureStore } from '@/models/store'
 const props = defineProps<{
   index: number
   path: string[]
+  isReadonly: boolean | null
 }>()
 
 const bg_class = 'bg-lime-400'
@@ -17,8 +18,21 @@ const pathInternal = [...props.path, props.index.toString(), 'kids']
 const store = structureStore
 
 onMounted(() => {
-  const me: Loop = { text: text.value, kids: [], component: 'loop' }
-  store.setters.setObject([...props.path, props.index.toString()], me)
+  if (props.isReadonly ?? false) {
+    const model = store.getters.get([
+      ...props.path,
+      props.index.toString(),
+    ]) as Loop
+    text.value = model.text
+    model.kids.forEach((el) => {
+      if (el.component === 'if_block') children.value.push(IfBlock)
+      if (el.component === 'process') children.value.push(ProcessBlock)
+      if (el.component === 'loop') children.value.push(LoopBlock)
+    })
+  } else {
+    const me: Loop = { text: text.value, kids: [], component: 'loop' }
+    store.setters.setObject([...props.path, props.index.toString()], me)
+  }
 })
 
 const emit = defineEmits<{
@@ -87,6 +101,7 @@ const children = ref<Component[]>([])
           :is="name"
           :index="index"
           :path="pathInternal"
+          :isReadonly="props.isReadonly"
           @delete="(id: number) => doDelete(id)"
           class="border border-black"
         ></component>

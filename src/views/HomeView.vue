@@ -4,11 +4,13 @@ import IfBlock from '@/components/IfBlock.vue'
 import LoopBlock from '@/components/LoopBlock.vue'
 import { type Component, ref } from 'vue'
 import { structureStore } from '@/models/store'
+import { useRouter } from 'vue-router'
 
 const onHover = ref(false)
 
 const store = structureStore
 const path = ['/']
+const router = useRouter()
 
 const doDelete = (index: number) => {
   store.setters.removeObj([...path, index.toString()])
@@ -23,8 +25,8 @@ const dropper = (evt: DragEvent) => {
   onHover.value = false
 }
 
-const show = () => {
-  console.log(store.getters.dump())
+const upload = () => {
+  router.push('/upload')
 }
 
 const children = ref<Component[]>([])
@@ -34,8 +36,8 @@ const children = ref<Component[]>([])
   <main>
     <div class="w-100 p-28 border">
       <div class="flex justify-end px-12">
-        <button class="p-1 border bg-pink-600 rounded-lg" @click="show">
-          Generate
+        <button class="p-1 border bg-pink-600 rounded-lg" @click="upload">
+          Speichern
         </button>
       </div>
       <div class="flex gap-3 justify-center p-5">

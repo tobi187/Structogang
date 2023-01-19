@@ -1,4 +1,4 @@
-import { remove, set } from 'json-pointer'
+import { remove, set, get } from 'json-pointer'
 import type { BlockBase } from './blocks'
 
 class StructureStore {
@@ -38,6 +38,9 @@ const structureStore = {
   getters: {
     dump() {
       return structureStore.state
+    },
+    get(path: string[]) {
+      return get(structureStore.state, path)
     },
   },
   setters: {
