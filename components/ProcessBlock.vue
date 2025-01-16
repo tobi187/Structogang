@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import type { ProcessModel } from '@/models/blocks'
-import { structureStore } from '@/models/store'
+import type { ProcessModel } from '@/types/block'
+import { structureStore } from '@/utils/store'
 
 const props = defineProps<{
   index: number
@@ -38,20 +38,14 @@ const text = ref('')
 
 <template>
   <div class="w-100 border border-black flex">
-    <textarea
-      class="text-center p-2 basis-full bg-neutral-400 placeholder-black"
-      v-model="text"
+    <textarea class="text-center p-2 basis-full bg-neutral-400 placeholder-gray-500" v-model="text"
       placeholder="var tobi_gewinnt_aoc = !BitConverter.ToBoolean(new byte[] { (byte)(new Random().Next(4)) }, 0);"
-      @change="changeTitle"
-    />
+      @change="changeTitle" />
     <div class="flex bg-neutral-400 align-middle h-100">
       <div class="items-center flex">
-        <font-awesome-icon
-          size="lg"
-          icon="fa-solid-xl fa-trash"
+        <Icon size="2em" name="i-heroicons-trash"
           class="rounded-full p-2 m-3 bg-red-600 hover:scale-125 hover:cursor-pointer"
-          @click="emit('delete', props.index)"
-        />
+          @click="emit('delete', props.index)" />
       </div>
     </div>
   </div>

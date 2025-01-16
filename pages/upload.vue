@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import type { BlockBase } from '@/models/blocks'
-import { structureStore } from '@/models/store'
-import { ref, onMounted, type Component } from 'vue'
-import ProcessBlock from '@/components/ProcessBlock.vue'
-import IfBlock from '@/components/IfBlock.vue'
-import LoopBlock from '@/components/LoopBlock.vue'
+import type { BlockBase } from '@/types/block'
+import { structureStore } from '@/utils/store'
+import { ref, onMounted, type Component, type ConcreteComponent } from 'vue'
+
+const ProcessBlock = resolveComponent('ProcessBlock')
+const IfBlock = resolveComponent('IfBlock')
+const LoopBlock = resolveComponent('LoopBlock')
 
 const readOnlyView = ref(false)
 const path = ['/']
@@ -20,7 +21,7 @@ onMounted(() => {
   })
 })
 
-const children = ref<Component[]>([])
+const children = ref<(ConcreteComponent | string)[]>([])
 </script>
 
 <template>
@@ -33,14 +34,8 @@ const children = ref<Component[]>([])
 
       <div>
         <div class="border border-black w-100">
-          <component
-            v-for="(name, index) in children"
-            :key="index"
-            :is="name"
-            :index="index"
-            :path="path"
-            :isReadonly="readOnlyView"
-          ></component>
+          <component v-for="(name, index) in children" :key="index" :is="name" :index="index" :path="path"
+            :isReadonly="readOnlyView"></component>
         </div>
       </div>
     </div>

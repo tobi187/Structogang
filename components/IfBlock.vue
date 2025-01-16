@@ -1,10 +1,12 @@
 <script setup lang="ts">
-import ProcessBlock from '@/components/ProcessBlock.vue'
-import IfBlock from '@/components/IfBlock.vue'
-import LoopBlock from '@/components/LoopBlock.vue'
-import type { IfModel } from '@/models/blocks'
-import { ref, onMounted, type Component } from 'vue'
-import { structureStore } from '@/models/store'
+import type { IfModel } from '@/types/block'
+import { ref, onMounted, type ConcreteComponent } from 'vue'
+import { structureStore } from '@/utils/store'
+import { Icon } from '#components'
+
+const ProcessBlock = resolveComponent('ProcessBlock')
+const IfBlock = resolveComponent('IfBlock')
+const LoopBlock = resolveComponent('LoopBlock')
 
 const props = defineProps<{
   index: number
@@ -85,71 +87,39 @@ const changeTitle = () => {
   store.setters.setTitle(path, text.value)
 }
 
-const childrenTrue = ref<Component[]>([])
-const childrenFalse = ref<Component[]>([])
+const childrenTrue = ref<(ConcreteComponent | string)[]>([])
+const childrenFalse = ref<(ConcreteComponent | string)[]>([])
 </script>
 
 <template>
   <div class="border border-black">
     <div class="w-100 flex bg-orange-300 items-center">
-      <input
-        class="w-full h-full p-3 text-center text-wrap bg-orange-300"
-        v-model="text"
-        placeholder="if (groesser < kleiner)"
-        @change="changeTitle"
-      />
+      <input class="w-full h-full p-3 text-center text-wrap bg-orange-300" v-model="text"
+        placeholder="if (groesser < kleiner)" @change="changeTitle" />
       <div class="flex align-middle">
         <div class="items-center flex">
-          <font-awesome-icon
-            size="lg"
-            icon="fa-solid-xl fa-trash"
-            class="rounded-full p-2 m-3 bg-red-600 hover:scale-125 hover:cursor-pointer"
-            @click="emit('delete', props.index)"
-          />
+          <Icon size="2em" name="i-heroicons-trash" class="p-2 m-3 bg-red-600 hover:scale-125 hover:cursor-pointer"
+            @click="emit('delete', props.index)" />
         </div>
       </div>
     </div>
     <div class="flex border w-100">
       <div class="w-1/2 border border-black p-2 py-4">
-        <div
-          class="w-100 h-100 text-center"
-          :class="{ 'bg-cyan-500': hoverTrue }"
-          @dragenter="hoverTrue = true"
-          @dragleave="hoverTrue = false"
-          @drop="onTrueDrop"
-          @dragover.prevent
-        >
+        <div class="w-100 h-100 text-center" :class="{ 'bg-cyan-500': hoverTrue }" @dragenter="hoverTrue = true"
+          @dragleave="hoverTrue = false" @drop="onTrueDrop" @dragover.prevent>
           True
         </div>
-        <component
-          v-for="(name, index) in childrenTrue"
-          :key="index"
-          :index="index"
-          :is="name"
-          :path="trueInternal"
-          @delete="(index: number) => doTrueDelete(index)"
-        >
+        <component v-for="(name, index) in childrenTrue" :key="index" :index="index" :is="name" :path="trueInternal"
+          @delete="(index: number) => doTrueDelete(index)">
         </component>
       </div>
       <div class="w-1/2 border border-black p-2 py-4">
-        <div
-          class="w-100 h-100 text-center drop-zone"
-          :class="{ 'bg-cyan-500': hoverFalse }"
-          @dragenter="hoverFalse = true"
-          @dragleave="hoverFalse = false"
-          @drop="onFalseDrop"
-          @dragover.prevent
-        >
+        <div class="w-100 h-100 text-center drop-zone" :class="{ 'bg-cyan-500': hoverFalse }"
+          @dragenter="hoverFalse = true" @dragleave="hoverFalse = false" @drop="onFalseDrop" @dragover.prevent>
           False
         </div>
-        <component
-          v-for="(name, index) in childrenFalse"
-          :key="index"
-          :is="name"
-          :index="index"
-          :path="falseInternal"
-          @delete="(index: number) => doFalseDelete(index)"
-        >
+        <component v-for="(name, index) in childrenFalse" :key="index" :is="name" :index="index" :path="falseInternal"
+          @delete="(index: number) => doFalseDelete(index)">
         </component>
       </div>
     </div>

@@ -1,5 +1,6 @@
-import { remove, set, get } from 'json-pointer'
-import type { BlockBase } from './blocks'
+import jsonPointer from 'json-pointer'
+import type { BlockBase } from '@/types/block'
+const { remove, set, get } = jsonPointer
 
 class StructureStore {
   private state: BlockBase[] = []
